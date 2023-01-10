@@ -4,10 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -15,6 +19,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ContentResolver contentResolver = getContentResolver();
+        Uri musicUri = MediaStore.Audio.Media.INTERNAL_CONTENT_URI;
+        Cursor musicCursor = contentResolver.query(musicUri, null, null, null, null);
+
+        try {
+
+            MediaPlayer mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setDataSource(getApplicationContext(),musicUri);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         logMusikList();
     }
@@ -36,5 +56,8 @@ public class MainActivity extends AppCompatActivity {
             String duration = musicCursor.getString(durationColumn);
             Log.d("MusicRetriever", "Title: " + title + " | Artist: " + artist + " | Album: " + album + " | Duration: " + duration);
         }
+
+
     }
+
 }
